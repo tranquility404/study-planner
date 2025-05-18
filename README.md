@@ -1,54 +1,50 @@
-# React + TypeScript + Vite
+# Study Planner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A smart study planner application that helps students organize their exam preparation effectively by creating personalized study schedules based on exam dates, subject difficulty, and available study hours.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Daily Hours Calculator**: Input your daily schedule to calculate available study hours
+- **Exam Schedule Management**: Track upcoming exams with dates and difficulty levels
+- **Syllabus Organization**: Break down subjects into topics and estimate study duration
+- **Smart Priority Allocation**: Automatically prioritize subjects based on:
+  - Exam proximity
+  - Subject difficulty
+  - Content length
+  - Available study hours
+- **Dynamic Timetable Generation**: Create balanced study schedules that optimize your study time
 
-## Expanding the ESLint configuration
+## Demo
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+https://github.com/yourusername/study-planner/assets/demo.gif
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+[View Live Demo](https://your-demo-url.com)
+
+## Tech Stack
+
+- React 18
+- TypeScript
+- Tailwind CSS
+- React Beautiful DND
+- React Router
+- Context API for state management
+
+## Getting Started
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/study-planner.git
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+2. Install dependencies:
+```bash
+cd study-planner
+npm install
 ```
+
+3. Start the development server:
+```bash
+npm run dev
+```
+
+4. Open [http://localhost:5173](http://localhost:5173) to view it in your browser
