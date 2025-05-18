@@ -1,0 +1,37 @@
+subject,topic,estimated_hours
+Calculus II,Limits and Continuity,2
+Calculus II,Derivatives and Differentiation,3
+Calculus II,Integration Techniques,4
+Calculus II,Applications of Integration,3
+Calculus II,Infinite Series,3
+Data Structures and Algorithms,Arrays and Linked Lists,2
+Data Structures and Algorithms,Stacks and Queues,2
+Data Structures and Algorithms,Trees and Graphs,4
+Data Structures and Algorithms,Sorting Algorithms,3
+Data Structures and Algorithms,Search Algorithms,2
+Data Structures and Algorithms,Dynamic Programming,4
+Introduction to Quantum Physics,Wave-Particle Duality,2
+Introduction to Quantum Physics,Schrödinger Equation,3
+Introduction to Quantum Physics,Quantum Harmonic Oscillator,2
+Introduction to Quantum Physics,Hydrogen Atom,3
+Introduction to Quantum Physics,Quantum Tunneling,2
+Organic Chemistry,Alkanes and Cycloalkanes,2
+Organic Chemistry,Alkenes and Alkynes,2
+Organic Chemistry,Alcohols and Ethers,2
+Organic Chemistry,Aromatic Compounds,3
+Organic Chemistry,Stereochemistry,3
+Organic Chemistry,Reaction Mechanisms,4
+Modern World History,Industrial Revolution,2
+Modern World History,World War I,3
+Modern World History,Interwar Period,2
+Modern World History,World War II,3
+Modern World History,Cold War Era,3
+Financial Accounting,Accounting Principles,2
+Financial Accounting,Financial Statements,3
+Financial Accounting,Inventory Valuation,2
+Financial Accounting,Depreciation Methods,2
+Financial Accounting,Financial Ratio Analysis,3
+Spanish Literature,Medieval Spanish Literature,2
+Spanish Literature,Golden Age Literature,3
+Spanish Literature,19th Century Spanish Literature,2
+Spanish Literature,Contemporary Spanish Literature,3
