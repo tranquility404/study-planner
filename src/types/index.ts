@@ -30,3 +30,13 @@ export interface StudyPlannerState {
     totalWeeklyHours: number;
     currentStep: number;
 }
+
+export interface WorkingHourResponse {
+    working_hour: {
+        Day: string;
+        "Sleep Hour": number;
+        "College Hour": number;
+        "Work Hour": number;
+        "Leisure Hour": number;
+    }[];
+}
