@@ -127,6 +127,33 @@ async def generate_time_table(text: Optional[str] = Form(None)):
     except json.JSONDecodeError:
         return {"status": 1, "message": "Invalid JSON returned from AI"}
     
+    data.append({"score_data":[
+    {
+      "date": "00:00:00",
+      "todaysScore": 0,
+      "studySessions": [
+        {
+          "subject": "A",
+          "durationMinutes": 50,
+          "points": 0,
+          "status": "pending"
+        },
+        {
+          "subject": "B",
+          "durationMinutes": 50,
+          "points": 0,
+          "status": "pending"
+        }
+      ],
+      "challengeProgress": {
+        "completed": 0,
+        "total": 2,
+        "pointsEarned": 0,
+        "pointsTotal": 100
+      },
+      "studyNotes": "here is my data"
+    }]})
+
     inserted_id = mongo_stuff.save_info_in_data(
         user_id="ebea5c71-0c34-4aae-a1ca-566fc7a6eaf1",
         username="Tranquility",
@@ -158,22 +185,65 @@ async def fetch_time_table(text: Optional[str] = Form(None)):
     fetched_doc = mongo_stuff.fetch_info_data(text)
     return {"status": 0, "data": serialize_mongo_doc(fetched_doc)}
 
+def convert_object_ids(doc):
+    """Recursively convert all ObjectId fields to string."""
+    if isinstance(doc, dict):
+        return {k: convert_object_ids(v) for k, v in doc.items()}
+    elif isinstance(doc, list):
+        return [convert_object_ids(item) for item in doc]
+    elif isinstance(doc, ObjectId):
+        return str(doc)
+    else:
+        return doc
+
 @app.post("/get-all-time-table/")
-async def get_all_time_table(user_id: str = Form(...)):
-    payload = verify_jwt_token(user_id)
-    if not payload:
-        return {"status": 1, "message": "Invalid or expired token"}
-    
-    actual_user_id = payload.get("sub")
-    
+async def get_all_time_table():
     try:
         with open("mongo_db_ids.json", 'r') as file:
             data = json.load(file)
     except (FileNotFoundError, json.JSONDecodeError):
         data = []
-    
-    user_data = [entry for entry in data if entry.get("user_id") == actual_user_id]
-    return user_data
+
+    dc = []
+    for i in data:
+        fetched_doc = mongo_stuff.fetch_info_data(i["Mongodb_id"])
+        if fetched_doc:
+            cleaned_doc = convert_object_ids(fetched_doc)
+            dc.append(cleaned_doc)
+
+    return dc
+
+@app.post("/delete-time-table/")
+async def delete_time_table(text: Optional[str] = Form(None)):
+    fetched_doc = mongo_stuff.delete_info_data(text)
+    if fetched_doc==True:
+        return {"output":"done"}
+    elif fetched_doc==False:
+        return {"output":"sorry data is not avai.."}
+
+@app.post("/study-buddy-chatbot/")
+async def study_buddy_chatbot(text: str = Form(...),mongodb_id: str = Form(...)):
+    text_output=azure_ai.chatbot(text)
+    return text_output
+
+@app.post("/score-data-update/")
+async def score_data_update(mongodb_id: str = Form(...), json_data: str = Form(...)):
+    def replace_score_data_in_json(data, new_score_data):
+        time_table = data['data']['schedule']['time table']
+        score_data_index = None
+        for i, item in enumerate(time_table):
+            if 'score_data' in item:
+                score_data_index = i
+                break
+        if score_data_index is not None:
+            time_table[score_data_index]['score_data'] = [new_score_data]
+        else:
+            time_table.append({'score_data': [new_score_data]})
+        return data
+    original_data =mongo_stuff.fetch_info_data(mongodb_id)
+    new_score_data = json_data
+    updated_json = replace_score_data_in_json(original_data, new_score_data)
+    return updated_json
 
 @app.post("/ping/")
 async def get_all_time_table():
