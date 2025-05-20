@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Route, Routes, useNavigate } from 'react-router-dom';
+// import { ToastContainer } from 'react-toastify';
+// import 'react-toastify/dist/ReactToastify.css';
 import AuthPage from './pages/Auth';
 import CreateTimeTable from './pages/CreateTimeTable';
 import HomePage from './pages/HomePage';
@@ -17,18 +19,15 @@ function App() {
       setIsAuthenticated(false);
       navigate('/auth');
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <>
       <Routes>
-        {/* <Route path="/" element={<Navigate to="/daily-hours" />} /> */}
         <Route path="/" element={<HomePage />} />
         <Route path="/create-timetable" element={<CreateTimeTable />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/timetable/:id" element={<Timetable />} />
-
-
       </Routes>
     </>
   );

@@ -33,10 +33,18 @@ export function deletTimetable(id: any) {
   return apiClient.post('/delete-time-table/', formData);
 };
 
-export function chatBot(msg: any) {
-  const formData = new URLSearchParams();
-  formData.append("text", msg);
-  return apiClient.post('/study-buddy-chatbot/', formData);
+export function chatBot(msg: any, id: any) {
+  return apiClient.post('/study-buddy-chatbot/', {
+    "text": msg,
+    "mongodb_id": id
+  });
+};
+
+export function updateScore(id: any, data: any) {
+  return apiClient.post('/score-data-update/', {
+    "mongodb_id": id,
+    "json_data": JSON.stringify(data),
+  });
 };
 
 export function fetchTimetable(id: any) {

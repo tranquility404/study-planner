@@ -17,6 +17,7 @@ interface ChatBotOverlayProps {
   title?: string;
   botIntro?: string;
   theme?: 'light' | 'dark';
+  timetableId?: string;
 }
 
 const ChatBotOverlay: React.FC<ChatBotOverlayProps> = ({
@@ -25,7 +26,7 @@ const ChatBotOverlay: React.FC<ChatBotOverlayProps> = ({
   position = 'bottom-right',
   title = 'Chat Assistant',
   botIntro = "Hello! 👋 I'm your assistant. Ask me anything about your timetable or schedule!",
-  theme = 'light'
+  theme = 'light', timetableId,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -68,7 +69,7 @@ const ChatBotOverlay: React.FC<ChatBotOverlayProps> = ({
     setIsLoading(true);
     
     try {
-      const res = await chatBot(inputMessage);
+      const res = await chatBot(inputMessage, timetableId);
       
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),

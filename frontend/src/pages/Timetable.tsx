@@ -1,7 +1,7 @@
-import { BookOpen, Calendar, CheckSquare, Clock, Coffee, Target } from "lucide-react";
+import { BookOpen, Calendar, CheckSquare, Clock, CloudDownload, Coffee, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchTimetable } from "../api/apiRequests";
+import { fetchTimetable, updateScore } from "../api/apiRequests";
 import ChatBotOverlay from "../components/ChatBot";
 
 // Define TypeScript interfaces
@@ -68,10 +68,7 @@ const calculateDuration = (startTime: string, endTime: string): number => {
   return end - start;
 };
 
-export default function Timetable() {
-  const { id } = useParams();
-
-  const getCurrentDay = () => {
+const getCurrentDay = () => {
     const today = new Date().getDay();
     const dayMap = {
       0: "Sunday",
@@ -85,211 +82,41 @@ export default function Timetable() {
     return dayMap[today as keyof typeof dayMap];
   };
 
-  const [data, setData] = useState<TimetableData>({
-    "timetableName": "Mytimetable",
-    "subjects": [
-      {
-        "id": "d1f554a7-22c4-41c5-947e-638339f827d1",
-        "name": "Maths",
-        "priority": 1,
-        "difficultyLevel": "Moderate",
-        "dailyRevisionRequired": true
-      },
-      {
-        "id": "529cb4a5-bba2-4a6a-8d1e-4301983d12db",
-        "name": "Physics",
-        "priority": 3,
-        "difficultyLevel": "Moderate",
-        "dailyRevisionRequired": false
-      },
-      {
-        "id": "c0fa5545-075e-4fa3-b4df-1673d669237c",
-        "name": "Chemistry",
-        "priority": 3,
-        "difficultyLevel": "Hard",
-        "dailyRevisionRequired": false
-      },
-      {
-        "id": "a8e213a5-fd11-423c-a14f-de54a27ed089",
-        "name": "English",
-        "priority": 3,
-        "difficultyLevel": "Moderate",
-        "dailyRevisionRequired": false
-      }
-    ],
-    "preferredStudyTime": "Evening",
-    "studyBlockDuration": 50,
-    "breakDuration": 10,
-    "dailyTargetStudyHours": 4,
-    "availableBlocks": [
-      { "day": "Monday", "start": "18:00", "end": "22:00" },
-      { "day": "Tuesday", "start": "18:00", "end": "22:00" },
-      { "day": "Wednesday", "start": "18:00", "end": "22:00" },
-      { "day": "Thursday", "start": "18:00", "end": "22:00" },
-      { "day": "Friday", "start": "18:00", "end": "22:00" },
-      { "day": "Saturday", "start": "10:00", "end": "17:00" },
-      { "day": "Sunday", "start": "10:00", "end": "17:00" }
-    ],
-    "offDay": "Sunday",
-    "todayScore": 75,
-    "todayChallenges": [
-      { "id": "ch1", "subject": "Maths", "duration": 50, "completed": true, "points": 25 },
-      { "id": "ch2", "subject": "Physics", "duration": 50, "completed": true, "points": 25 },
-      { "id": "ch3", "subject": "Chemistry", "duration": 50, "completed": false, "points": 25 },
-      { "id": "ch4", "subject": "English", "duration": 50, "completed": true, "points": 25 }
-    ],
-    "sessionHistory": [
-      { "subject": "Maths", "completed": 15, "missed": 2, "target": 20 },
-      { "subject": "Physics", "completed": 10, "missed": 5, "target": 15 },
-      { "subject": "Chemistry", "completed": 8, "missed": 7, "target": 15 },
-      { "subject": "English", "completed": 12, "missed": 3, "target": 15 }
-    ]
-  });
-
-  const [schedule, setSchedule] = useState<DaySchedule[]>([
-  {
-    "day": "Monday",
-    "sessions": [
-      {
-        "subject": "Maths",
-        "startTime": "18:00",
-        "endTime": "19:30",
-        "break": false
-      },
-      {
-        "break": true,
-        "startTime": "19:30",
-        "endTime": "19:45"
-      },
-      {
-        "subject": "English",
-        "startTime": "19:45",
-        "endTime": "21:15",
-        "break": false
-      }
-    ]
-  },
-  {
-    "day": "Tuesday",
-    "sessions": [
-      {
-        "subject": "Chemistry",
-        "startTime": "18:00",
-        "endTime": "19:30",
-        "break": false
-      },
-      {
-        "break": true,
-        "startTime": "19:30",
-        "endTime": "19:45"
-      },
-      {
-        "subject": "Physics",
-        "startTime": "19:45",
-        "endTime": "21:15",
-        "break": false
-      }
-    ]
-  },
-  {
-    "day": "Wednesday",
-    "sessions": [
-      {
-        "subject": "Biology",
-        "startTime": "18:00",
-        "endTime": "19:30",
-        "break": false
-      },
-      {
-        "break": true,
-        "startTime": "19:30",
-        "endTime": "19:45"
-      },
-      {
-        "subject": "Human Values",
-        "startTime": "19:45",
-        "endTime": "21:15",
-        "break": false
-      }
-    ]
-  },
-  {
-    "day": "Thursday",
-    "sessions": [
-      {
-        "subject": "Maths",
-        "startTime": "18:00",
-        "endTime": "19:30",
-        "break": false
-      },
-      {
-        "break": true,
-        "startTime": "19:30",
-        "endTime": "19:45"
-      },
-      {
-        "subject": "English",
-        "startTime": "19:45",
-        "endTime": "21:15",
-        "break": false
-      }
-    ]
-  },
-  {
-    "day": "Friday",
-    "sessions": [
-      {
-        "subject": "Chemistry",
-        "startTime": "18:00",
-        "endTime": "19:30",
-        "break": false
-      },
-      {
-        "break": true,
-        "startTime": "19:30",
-        "endTime": "19:45"
-      },
-      {
-        "subject": "Physics",
-        "startTime": "19:45",
-        "endTime": "21:15",
-        "break": false
-      }
-    ]
-  },
-  {
-    "day": "Saturday",
-    "sessions": []
-  },
-  {
-    "day": "Sunday",
-    "sessions": []
-  }
-]
-);
+export default function Timetable() {
+  const { id } = useParams();
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState<TimetableData | undefined>();
+  const [schedule, setSchedule] = useState<DaySchedule[] | undefined>();
+  const [currentDay, setCurrentDay] = useState(getCurrentDay());
+  const [activeTab, setActiveTab] = useState("timetable");
 
   useEffect(() => {
     const fetchData = async () => {
       if (id) {
         try {
+          setIsLoading(true);
           const res = await fetchTimetable(id);
           const scheduleData = res.data.data.schedule["time table"];
           const gatheredData = res.data.data.schedule.gathered_data;
-          const scoreData = scheduleData[5].score_data[0]; // Getting the score data
+          
+          // Get the schedule data (all days except the last one which contains score data)
+          setSchedule(scheduleData.slice(0, -1));
 
-          // Set the schedule
-          setSchedule(scheduleData.slice(0, 5)); // Only take the first 5 days, excluding score_data
+          // Get the score data from the last item
+          const scoreData = scheduleData[scheduleData.length - 1].score_data[0];
 
-          // Map the challenges from score data
-          const mappedChallenges = scoreData.studySessions.map((session: any, index: number) => ({
+          // Map study sessions to challenges
+          const todaySchedule = scheduleData.find((day: any) => day.day === getCurrentDay());
+          const studySessions = todaySchedule?.sessions.filter((session: any) => !session.break) || [];
+          
+          const mappedChallenges = studySessions.map((session: any, index: any) => ({
             id: `ch${index + 1}`,
-            subject: session.subject,
-            duration: session.durationMinutes,
-            completed: session.status === 'completed',
-            points: session.points || 25
+            subject: session.subject || '',
+            duration: calculateDuration(session.startTime, session.endTime),
+            completed: false, // Initially set as uncompleted
+            points: 25 // Default points per session
           }));
 
-          // Update the data state with both schedule and gathered data
           setData({
             timetableName: gatheredData.timetableName,
             subjects: gatheredData.subjects,
@@ -303,15 +130,16 @@ export default function Timetable() {
             todayChallenges: mappedChallenges,
             sessionHistory: gatheredData.subjects.map((subject: any) => ({
               subject: subject.name,
-              completed: Math.floor(Math.random() * 15) + 5, // Placeholder data
-              missed: Math.floor(Math.random() * 5), // Placeholder data
-              target: 15 // Placeholder data
+              completed: scoreData.challengeProgress.completed,
+              missed: 0, // Initialize with 0
+              target: scoreData.challengeProgress.total
             }))
           });
 
         } catch (error) {
           console.error('Error fetching timetable:', error);
-          // Handle error appropriately
+        } finally {
+          setIsLoading(false);
         }
       }
     };
@@ -319,18 +147,14 @@ export default function Timetable() {
     fetchData();
   }, [id]);
 
-  const [currentDay, setCurrentDay] = useState(getCurrentDay());
-  const [activeTab, setActiveTab] = useState("timetable");
   const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
   // Toggle challenge completion
   const toggleChallengeCompletion = (id: string) => {
-    setData(prevData => {
-      const updatedChallenges = prevData.todayChallenges.map(challenge => {
+    setData((prevData: any) => {
+      const updatedChallenges = prevData.todayChallenges.map((challenge: any) => {
         if (challenge.id === id) {
           const newCompleted = !challenge.completed;
-          // Adjust today's score based on completion status
-          // let scoreAdjustment = newCompleted ? challenge.points : -challenge.points;
 
           return {
             ...challenge,
@@ -340,8 +164,7 @@ export default function Timetable() {
         return challenge;
       });
 
-      // Calculate new score
-      const newScore = updatedChallenges.reduce((score, challenge) => {
+      const newScore = updatedChallenges.reduce((score: number, challenge: any) => {
         return score + (challenge.completed ? challenge.points : 0);
       }, 0);
 
@@ -352,6 +175,24 @@ export default function Timetable() {
       };
     });
   };
+
+  const saveTimetable = async () => {
+    const res = await updateScore(id, data);
+    alert("Saved successfully!")
+    console.log(res.data);
+  }
+
+  if (isLoading || !data || !schedule) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <h2 className="text-xl font-semibold text-gray-700">Loading your timetable...</h2>
+          <p className="text-gray-500 mt-2">Please wait while we fetch your schedule</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
@@ -367,7 +208,7 @@ export default function Timetable() {
               <Calendar className="mr-1" size={18} />
               {currentDay}
             </span>
-            <span className="text-indigo-100 flex items-center">
+            <span className="text-indigo-100 flex items-center mr-4">
               <Clock className="mr-1" size={18} />
               {data.preferredStudyTime} Focus
             </span>
@@ -399,6 +240,7 @@ export default function Timetable() {
               <Target className="mr-2" size={16} />
               Challenges
             </button>
+            
           </div>
         </div>
       </nav>
@@ -519,6 +361,13 @@ export default function Timetable() {
                 <span className="text-sm font-medium text-indigo-700 mr-2">Today's Score:</span>
                 <span className="text-lg font-bold text-indigo-700">{data.todayScore}</span>
               </div>
+              <span
+              onClick={saveTimetable}
+              className='inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200 shadow-sm'
+            >
+              <CloudDownload className="mr-2" size={16} />
+              Save
+            </span>
             </div>
 
             <div className="space-y-6">
@@ -632,6 +481,7 @@ export default function Timetable() {
         title="Timetable Assistant"
         botIntro="Hello! 👋 I'm your timetable assistant. Ask me anything about your classes or schedule!"
         theme="light"
+        timetableId={id}
       />
 
       </main>
