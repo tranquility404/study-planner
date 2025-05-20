@@ -4,56 +4,6 @@ import { useParams } from "react-router-dom";
 import { fetchTimetable } from "../api/apiRequests";
 import ChatBotOverlay from "../components/ChatBot";
 
-// Add these helper functions at the top of the file
-const generateTodayChallenges = (schedule: DaySchedule[], currentDay: string): Challenge[] => {
-  const todaySchedule = schedule.find(day => day.day === currentDay);
-  if (!todaySchedule) return [];
-
-  return todaySchedule.sessions
-    .filter(session => !session.break)
-    .map((session, index) => ({
-      id: `ch${index + 1}`,
-      subject: session.subject || '',
-      duration: calculateDuration(session.startTime, session.endTime),
-      completed: false,
-      points: 25
-    }));
-};
-
-const generateSessionHistory = (schedule: DaySchedule[]): SessionHistory[] => {
-  const subjectMap = new Map<string, { completed: number; missed: number; target: number }>();
-
-  schedule.forEach(day => {
-    day.sessions
-      .filter(session => !session.break)
-      .forEach(session => {
-        if (!session.subject) return;
-        
-        if (!subjectMap.has(session.subject)) {
-          subjectMap.set(session.subject, { completed: 0, missed: 0, target: 0 });
-        }
-        
-        const stats = subjectMap.get(session.subject)!;
-        stats.target++;
-        
-        // For demo purposes, randomly mark some sessions as completed or missed
-        const isCompleted = Math.random() > 0.3;
-        if (isCompleted) {
-          stats.completed++;
-        } else {
-          stats.missed++;
-        }
-      });
-  });
-
-  return Array.from(subjectMap.entries()).map(([subject, stats]) => ({
-    subject,
-    completed: stats.completed,
-    missed: stats.missed,
-    target: stats.target
-  }));
-};
-
 // Define TypeScript interfaces
 interface Subject {
   id: string;

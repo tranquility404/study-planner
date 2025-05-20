@@ -36,7 +36,6 @@ export default function CreateTimeTable() {
     // Active section state (0: metadata, 1: subjects, 2: schedule)
     const [activeSection, setActiveSection] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
-    const [showTimetable, setShowTimetable] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -104,16 +103,6 @@ export default function CreateTimeTable() {
             [name]: type === 'number' ? Number(value) : value
         });
     };
-
-    // Handle checkbox changes
-    // const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const { name, checked } = e.target;
-
-    //     setFormData({
-    //         ...formData,
-    //         [name]: checked
-    //     });
-    // };
 
     // Add a new subject
     const addSubject = () => {
@@ -212,11 +201,6 @@ export default function CreateTimeTable() {
         } finally {
             setIsLoading(false);
         }
-        // navigate('/timetable/682b8b61d9853c9e0cd71bef');
-
-        // setSchedule(res.data);
-
-        // generateTimetable();
     };
 
     // Render the form

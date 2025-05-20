@@ -2,7 +2,6 @@ import { ArrowLeft, ArrowRight, BookOpen, Lock, Mail, User } from 'lucide-react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, signup } from '../api/apiRequests';
-import { toast } from 'react-toastify';
 
 // Main component for the authentication page
 export default function AuthPage() {

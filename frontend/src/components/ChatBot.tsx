@@ -15,7 +15,6 @@ interface ChatBotOverlayProps {
   height?: string;
   position?: 'bottom-right' | 'bottom-left';
   title?: string;
-  apiEndpoint?: string;
   botIntro?: string;
   theme?: 'light' | 'dark';
 }
@@ -25,7 +24,6 @@ const ChatBotOverlay: React.FC<ChatBotOverlayProps> = ({
   height = 'h-96',
   position = 'bottom-right',
   title = 'Chat Assistant',
-  apiEndpoint = '/api/chat',
   botIntro = "Hello! 👋 I'm your assistant. Ask me anything about your timetable or schedule!",
   theme = 'light'
 }) => {
@@ -70,16 +68,6 @@ const ChatBotOverlay: React.FC<ChatBotOverlayProps> = ({
     setIsLoading(true);
     
     try {
-      // Simulate API call - replace with your actual endpoint call
-      // const response = await fetch(apiEndpoint, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ message: inputMessage })
-      // });
-      // const data = await response.json();
-      
-      // Simulated response after a short delay
-      
       const res = await chatBot(inputMessage);
       
       const botResponse: Message = {
@@ -105,29 +93,6 @@ const ChatBotOverlay: React.FC<ChatBotOverlayProps> = ({
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Simple bot response generator for demo purposes
-  const generateBotResponse = (userMessage: string): string => {
-    const message = userMessage.toLowerCase();
-    
-    if (message.includes('hello') || message.includes('hi')) {
-      return 'Hello there! How can I help with your timetable today?';
-    }
-    
-    if (message.includes('timetable') || message.includes('schedule')) {
-      return 'Your next class is Advanced Mathematics at 2:00 PM in Room 302. Would you like to see your full schedule?';
-    }
-    
-    if (message.includes('time') || message.includes('when')) {
-      return 'According to your schedule, you have free time between 3:30 PM and 5:00 PM today.';
-    }
-    
-    if (message.includes('help')) {
-      return 'I can help you check your class schedule, find free slots in your timetable, or remind you about upcoming deadlines. What would you like to know?';
-    }
-    
-    return "I'm not sure I understand. Could you ask about your timetable or schedule specifically?";
   };
 
   const positionClass = position === 'bottom-right' 
