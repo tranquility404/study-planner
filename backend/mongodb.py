@@ -41,3 +41,17 @@ class MongoDBHandler:
         else:
             print(f"No document found with user_id: {user_id}")
             return None
+    
+    def delete_info_data(self, mongo_id_str):
+        try:
+            obj_id = ObjectId(mongo_id_str)
+        except Exception as e:
+            print(f"Invalid MongoDB ObjectId: {mongo_id_str}. Error: {e}")
+            return None
+        result = self.collection.delete_one({"_id": obj_id})
+        if result.deleted_count == 1:
+            print(f"Successfully deleted document with _id: {mongo_id_str}")
+            return True
+        else:
+            print(f"No document found to delete with _id: {mongo_id_str}")
+            return False
