@@ -1,7 +1,8 @@
-import { AlertCircle, BarChart, BookOpen, Calendar, CheckSquare, Clock, Coffee, Target, TrendingDown } from "lucide-react";
+import { BookOpen, Calendar, CheckSquare, Clock, Coffee, Target } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchTimetable } from "../api/apiRequests";
+import ChatBotOverlay from "../components/ChatBot";
 
 // Add these helper functions at the top of the file
 const generateTodayChallenges = (schedule: DaySchedule[], currentDay: string): Challenge[] => {
@@ -320,25 +321,52 @@ export default function Timetable() {
   useEffect(() => {
     const fetchData = async () => {
       if (id) {
-        const res = await fetchTimetable(id);
-        const scheduleData = res.data["data"]["schedule"]["time table"];
-        setSchedule(scheduleData);
-        
-        // Generate today's challenges and session history
-        const todayChallenges = generateTodayChallenges(scheduleData, currentDay);
-        const sessionHistory = generateSessionHistory(scheduleData);
-        
-        setData(prev => ({
-          ...prev,
-          todayChallenges,
-          sessionHistory
-        }));
+        try {
+          const res = await fetchTimetable(id);
+          const scheduleData = res.data.data.schedule["time table"];
+          const gatheredData = res.data.data.schedule.gathered_data;
+          const scoreData = scheduleData[5].score_data[0]; // Getting the score data
+
+          // Set the schedule
+          setSchedule(scheduleData.slice(0, 5)); // Only take the first 5 days, excluding score_data
+
+          // Map the challenges from score data
+          const mappedChallenges = scoreData.studySessions.map((session: any, index: number) => ({
+            id: `ch${index + 1}`,
+            subject: session.subject,
+            duration: session.durationMinutes,
+            completed: session.status === 'completed',
+            points: session.points || 25
+          }));
+
+          // Update the data state with both schedule and gathered data
+          setData({
+            timetableName: gatheredData.timetableName,
+            subjects: gatheredData.subjects,
+            preferredStudyTime: gatheredData.preferredStudyTime,
+            studyBlockDuration: gatheredData.studyBlockDuration,
+            breakDuration: gatheredData.breakDuration,
+            dailyTargetStudyHours: gatheredData.dailyTargetStudyHours,
+            availableBlocks: gatheredData.availableBlocks,
+            offDay: gatheredData.offDay,
+            todayScore: scoreData.todaysScore,
+            todayChallenges: mappedChallenges,
+            sessionHistory: gatheredData.subjects.map((subject: any) => ({
+              subject: subject.name,
+              completed: Math.floor(Math.random() * 15) + 5, // Placeholder data
+              missed: Math.floor(Math.random() * 5), // Placeholder data
+              target: 15 // Placeholder data
+            }))
+          });
+
+        } catch (error) {
+          console.error('Error fetching timetable:', error);
+          // Handle error appropriately
+        }
       }
     };
-   
-    console.log("Data fetched successfully:", id);
-    fetchData();
 
+    fetchData();
   }, [id]);
 
   const [currentDay, setCurrentDay] = useState(getCurrentDay());
@@ -420,16 +448,6 @@ export default function Timetable() {
             >
               <Target className="mr-2" size={16} />
               Challenges
-            </button>
-            <button
-              onClick={() => setActiveTab("analysis")}
-              className={`px-4 py-3 font-medium text-sm flex items-center whitespace-nowrap ${activeTab === "analysis"
-                  ? "border-b-2 border-indigo-600 text-indigo-600"
-                  : "text-gray-500 hover:text-gray-700"
-                }`}
-            >
-              <BarChart className="mr-2" size={16} />
-              Analysis
             </button>
           </div>
         </div>
@@ -657,143 +675,15 @@ export default function Timetable() {
           </div>
         )}
 
-        {activeTab === "analysis" && (
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-lg font-semibold mb-6 text-gray-800 flex items-center">
-              <BarChart className="mr-2" size={20} />
-              Study Analysis
-            </h2>
+         <ChatBotOverlay 
+        width="w-80" 
+        height="h-96" 
+        position="bottom-right"
+        title="Timetable Assistant"
+        botIntro="Hello! 👋 I'm your timetable assistant. Ask me anything about your classes or schedule!"
+        theme="light"
+      />
 
-            <div className="space-y-6">
-              {/* Performance Analysis */}
-              <div className="bg-rose-50 p-5 rounded-lg border border-rose-100">
-                <h3 className="text-md font-medium text-rose-700 mb-4 flex items-center">
-                  <TrendingDown className="mr-2" size={18} />
-                  Subject Target Shortfalls
-                </h3>
-
-                {data.sessionHistory.map((subject, index) => {
-                  const deficit = subject.target - subject.completed;
-                  // const deficitPercentage = Math.round((deficit / subject.target) * 100);
-
-                  return (
-                    <div key={index} className="mb-4 last:mb-0">
-                      <div className="flex justify-between items-center mb-1">
-                        <div>
-                          <span className="text-rose-600 font-medium">{subject.subject}</span>
-                          <span className="text-rose-500 text-sm ml-2">
-                            ({subject.completed}/{subject.target} sessions)
-                          </span>
-                        </div>
-                        {deficit > 0 ? (
-                          <span className="text-xs font-medium px-2 py-1 bg-rose-100 text-rose-700 rounded">
-                            {deficit} sessions behind
-                          </span>
-                        ) : (
-                          <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded">
-                            On target
-                          </span>
-                        )}
-                      </div>
-                      <div className="w-full bg-rose-200 rounded-full h-2.5 mb-1">
-                        <div
-                          className={`h-2.5 rounded-full ${deficit > 0 ? 'bg-rose-500' : 'bg-green-500'}`}
-                          style={{ width: `${Math.min(100, (subject.completed / subject.target) * 100)}%` }}
-                        ></div>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-xs text-rose-600">Completion: {Math.round((subject.completed / subject.target) * 100)}%</span>
-                        <span className="text-xs text-rose-600">Missed: {subject.missed} sessions</span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Weekly Overview */}
-              <div className="bg-blue-50 p-5 rounded-lg border border-blue-100">
-                <h3 className="text-md font-medium text-blue-700 mb-4">Weekly Overview</h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-white rounded-md p-4 border border-blue-200">
-                    <h4 className="text-sm font-medium text-blue-700 mb-2">Completed Sessions</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {data.sessionHistory.map((subject, index) => (
-                        <div
-                          key={index}
-                          className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm flex items-center"
-                        >
-                          {subject.subject}: {subject.completed}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-md p-4 border border-blue-200">
-                    <h4 className="text-sm font-medium text-blue-700 mb-2">Missed Sessions</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {data.sessionHistory.map((subject, index) => (
-                        <div
-                          key={index}
-                          className="px-3 py-1 bg-rose-100 text-rose-700 rounded-full text-sm flex items-center"
-                        >
-                          {subject.subject}: {subject.missed}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="mt-4 p-4 bg-blue-100 rounded-md">
-                  <h4 className="text-sm font-medium text-blue-700 mb-2">Recommendations</h4>
-                  <ul className="space-y-2 text-blue-700 text-sm">
-                    {data.sessionHistory.some(s => (s.target - s.completed) > 5) && (
-                      <li className="flex items-start">
-                        <AlertCircle className="mr-2 flex-shrink-0 mt-0.5" size={14} />
-                        <span>Increase focus on subjects with significant deficits</span>
-                      </li>
-                    )}
-                    {data.sessionHistory.some(s => s.missed > 5) && (
-                      <li className="flex items-start">
-                        <AlertCircle className="mr-2 flex-shrink-0 mt-0.5" size={14} />
-                        <span>Consider rescheduling frequently missed sessions to more suitable times</span>
-                      </li>
-                    )}
-                    <li className="flex items-start">
-                      <AlertCircle className="mr-2 flex-shrink-0 mt-0.5" size={14} />
-                      <span>Complete today's challenges to stay on track with your goals</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-
-              {/* Study Streak */}
-              <div className="bg-purple-50 p-5 rounded-lg border border-purple-100">
-                <div className="flex justify-between items-center mb-3">
-                  <h3 className="text-md font-medium text-purple-700">Study Streak</h3>
-                  <span className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded-full">
-                    5 days
-                  </span>
-                </div>
-
-                <div className="flex justify-between mb-2">
-                  <div className="flex space-x-1">
-                    {[...Array(7)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium
-                          ${i < 5 ? 'bg-purple-500 text-white' : 'bg-gray-200 text-gray-500'}`}
-                      >
-                        {i + 1}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <p className="text-sm text-purple-600">Keep your streak going by completing today's challenges!</p>
-              </div>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* Footer */}
