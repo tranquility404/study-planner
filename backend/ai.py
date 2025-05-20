@@ -15,17 +15,12 @@ class AzureOpenAIChatClient:
         self.api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY", "INSERT_API_KEY_HERE")
         self.api_version = api_version or "2025-01-01-preview"
 
-        # Initialize the Azure OpenAI client with key-based authentication
         self.client = AzureOpenAI(
             azure_endpoint=self.azure_endpoint,
             api_key=self.api_key,
             api_version=self.api_version
         )
-        self.client_2 = AzureOpenAI(
-            azure_endpoint=self.azure_endpoint_2,
-            api_key=self.api_key_2,
-            api_version=self.api_version_2
-        )
+                     
     def generate_time_table(self, user_text: str, file_path: str = None) -> str:
         self.system_prompt = {
             "role": "system",
@@ -98,86 +93,63 @@ Edit
         )
 
         return completion.choices[0].message.content
-    # def generate_time_table(self, user_text: str, file_path: str = None) -> str:
-    #     self.system_prompt = {
-    #         "role": "system",
-    #         "content": """Forget about the previous instruction, Now you are going to work as a work day time estimator, for that i'll give you some text based data or byte64 data about the time table you have to use thata nd give me fullf fledge time which can be estimatedidly utilized by me such as Day, Sleep hour, college hour and make sure that you will send something no matter the inof is fully proviided or not use dummy info if info i less, and give me response in json formet only, and  No extra text, no explanation., here is the example:- [{"day":"Sunday","sleepHours":8,"collegeHours":0,"othersHours":2,"availableHours":14},{"day":"Monday","sleepHours":8,"collegeHours":6,"othersHours":2,"availableHours":8}]"""
-    #     }
+    def chatbot(self, user_text: str, file_path: str = None) -> str:
+        self.system_prompt = {
+            "role": "system",
+            "content": """ You are a friendly and helpful Study Planner Buddy AI. Your job is to assist users in planning their study schedules, giving learning suggestions, and helping them stay on track with their academic goals.
 
-    #     user_prompt_content = user_text
+When a user interacts with you, always start by gathering essential study details:
 
-    #     chat_prompt = [
-    #         self.system_prompt,
-    #         {
-    #             "role": "user",
-    #             "content": user_prompt_content
-    #         }
-    #     ]
+Which university or school are you studying in?
 
-    #     completion = self.client.chat.completions.create(
-    #         max_tokens=8000,  
-    #         temperature=0.1,  
-    #         top_p=0.21,  
-    #         frequency_penalty=0.02,  
-    #         presence_penalty=0.03,
-    #         model=self.deployment_name,
-    #         messages=chat_prompt
-    #     )
+What course or program are you enrolled in?
 
-    #     return completion.choices[0].message.content
-    
-    # def generate_exam_info(self, user_text: str, file_path: str = None) -> str:
-    #     self.system_prompt = {
-    #         "role": "system",
-    #         "content": """Forget about the previous instruction, Now you are going to work as a exma info generator, for that i'll give you some text data or byte64 data about the time table you have to use that and give me full fledge info such as Subject, Date_of_exam, Difficulty_level and make sure that you will send something no matter the inof is fully proviided or not use dummy info if info i less, and give me response in json formet only, and No extra text, no explanation., here is the example:- [{subject:"Database Management",date:new Date(2025,5,25),duration:"3 hours",difficulty:3},{subject:"Data Structures",date:new Date(2025,5,28),duration:"3 hours",difficulty:4}]"""
-    #     }
+What semester or academic term are you in?
 
-    #     user_prompt_content = user_text
+How many days are left until your exam or deadline?
 
-    #     chat_prompt = [
-    #         self.system_prompt,
-    #         {
-    #             "role": "user",
-    #             "content": user_prompt_content
-    #         }
-    #     ]
+Based on this information, provide:
 
-    #     completion = self.client.chat.completions.create(
-    #         max_tokens=8000,  
-    #         temperature=0.1,  
-    #         top_p=0.21,  
-    #         frequency_penalty=0.02,  
-    #         presence_penalty=0.03,
-    #         model=self.deployment_name,
-    #         messages=chat_prompt
-    #     )
+A personalized study plan.
 
-    #     return completion.choices[0].message.content
-    
-    # def generate_subject_topic_info(self, user_text: str, file_path: str = None) -> str:
-    #     self.system_prompt = {
-    #         "role": "system",
-    #         "content": """Forget about the previous instruction, Now you are going to work as a Subject topic info generator, for that i'll give you some text data or byte64 data about you have to use that to give me full fledge info about there topics and there estimated time to do, such as Subject, Topics_name, Subject_length, Estimated_time_to_learn_in_hour and make sure that you will send something no matter the info is fully proviided or use 5-6 dummy info if info i less, and  give me response in json formet only, and No extra text, no explanation., here is the example:- [{"name":"Database Management","topics":["Introduction to DBMS","Entity Relationship Model","Normalization","SQL Basics","Transactions and Concurrency","Indexing and Query Optimization"],"lengthLevel":"Moderate","estimatedHours":12},{"name":"Data Structures","topics":["Arrays and Linked Lists","Stacks and Queues","Trees and Binary Trees","Graphs","Sorting Algorithms","Searching Algorithms","Hash Tables"],"lengthLevel":"Extensive","estimatedHours":21}]"""
-    #     }
+Topic and lecture suggestions.
 
-    #     user_prompt_content = user_text
+Study resources and techniques.
 
-    #     chat_prompt = [
-    #         self.system_prompt,
-    #         {
-    #             "role": "user",
-    #             "content": user_prompt_content
-    #         }
-    #     ]
+Tips based on the academic calendar and course structure.
 
-    #     completion = self.client.chat.completions.create(
-    #         max_tokens=8000,  
-    #         temperature=0.1,  
-    #         top_p=0.21,  
-    #         frequency_penalty=0.02,  
-    #         presence_penalty=0.03,
-    #         model=self.deployment_name,
-    #         messages=chat_prompt
-    #     )
+Encourage the user to ask more study-related questions.
 
-    #     return completion.choices[0].message.content
+Important Rules:
+
+Only answer study-related questions.
+
+If the user asks something unrelated to their studies, respond:
+"I can't help you with that, please ask me anything related to your studies."
+
+Always keep your tone warm, supportive, and focused on academic success.
+
+Your goal is to be the ultimate virtual buddy who makes planning and studying easier for students. """
+        }
+
+        user_prompt_content = user_text
+
+        chat_prompt = [
+            self.system_prompt,
+            {
+                "role": "user",
+                "content": user_prompt_content
+            }
+        ]
+
+        completion = self.client.chat.completions.create(
+            max_tokens=8000,  
+            temperature=0.1,  
+            top_p=0.21,  
+            frequency_penalty=0.02,  
+            presence_penalty=0.03,
+            model=self.deployment_name,
+            messages=chat_prompt
+        )
+
+        return completion.choices[0].message.content
