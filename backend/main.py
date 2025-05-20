@@ -72,6 +72,10 @@ def serialize_mongo_doc(doc):
         return {k: str(v) if isinstance(v, ObjectId) else v for k, v in doc.items()}
     return doc
 
+@app.get("/health")
+def health():
+    return {"status": 200}
+
 @app.post("/signup")
 def signup(user: SignUpRequest):
     users = load_credentials()
@@ -109,17 +113,7 @@ def login(login_data: LoginRequest):
     return {"status": 1, "message": "Invalid credentials"}
 
 @app.post("/generate-time-table/")
-async def generate_time_table(user_id: str = Form(...), text: Optional[str] = Form(None)):
-    payload = verify_jwt_token(user_id)
-    if not payload:
-        return {"status": 1, "message": "Invalid or expired token"}
-    
-    actual_user_id = payload.get("sub")
-    users = load_credentials()
-    user = next((u for u in users if u.get("user_id") == actual_user_id), None)
-    if not user:
-        return {"status": 1, "message": "User not found"}
-    
+async def generate_time_table(text: Optional[str] = Form(None)):
     encoded_pdf = f"{text}"
     info = azure_ai.generate_time_table(encoded_pdf)
     
@@ -134,13 +128,13 @@ async def generate_time_table(user_id: str = Form(...), text: Optional[str] = Fo
         return {"status": 1, "message": "Invalid JSON returned from AI"}
     
     inserted_id = mongo_stuff.save_info_in_data(
-        user_id=actual_user_id,
-        username=user.get("username", ""),
+        user_id="ebea5c71-0c34-4aae-a1ca-566fc7a6eaf1",
+        username="Tranquility",
         schedule_data={"time table": data, "gathered_data": json.loads(text)}
     )[0]
 
     file_path = "mongo_db_ids.json"
-    new_entry = {"Mongodb_id": str(inserted_id), "user_id": actual_user_id}
+    new_entry = {"Mongodb_id": str(inserted_id), "user_id": "Tranquility"}
 
     try:
         with open(file_path, 'r') as file:
@@ -156,25 +150,12 @@ async def generate_time_table(user_id: str = Form(...), text: Optional[str] = Fo
         "status": 0,
         "message": "Schedule saved",
         "Mongodb_id": str(inserted_id),
-        "user_id": actual_user_id
+        # "user_id": actual_user_id
     }
 
 @app.post("/fetch-time-table/")
-# user_id: str = Form(...), 
 async def fetch_time_table(text: Optional[str] = Form(None)):
-    # payload = verify_jwt_token(user_id)
-    # if not payload:
-        # return {"status": 1, "message": "Invalid or expired token"}
-    
-    # actual_user_id = payload.get("sub")
-    if not text:
-        return {"status": 1, "message": "Missing document ID"}
-    
     fetched_doc = mongo_stuff.fetch_info_data(text)
-    if not fetched_doc :
-    # or fetched_doc.get("user_id") != actual_user_id:
-        return {"status": 1, "message": "Document not found or unauthorized access"}
-
     return {"status": 0, "data": serialize_mongo_doc(fetched_doc)}
 
 @app.post("/get-all-time-table/")
@@ -193,3 +174,7 @@ async def get_all_time_table(user_id: str = Form(...)):
     
     user_data = [entry for entry in data if entry.get("user_id") == actual_user_id]
     return user_data
+
+@app.post("/ping/")
+async def get_all_time_table():
+    return "pong"
