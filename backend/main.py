@@ -193,7 +193,3 @@ async def get_all_time_table(user_id: str = Form(...)):
     
     user_data = [entry for entry in data if entry.get("user_id") == actual_user_id]
     return user_data
-
-@app.post("/ping/")
-async def get_all_time_table():
-    return "pong"
