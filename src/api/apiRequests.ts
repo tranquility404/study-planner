@@ -1,4 +1,4 @@
-import authApiClient, { apiClient } from './apiClient';
+import { apiClient } from './apiClient';
 
 export function login(username: string, pass: string) {
   return apiClient.post('/login/', {
@@ -16,12 +16,21 @@ export function signup(username: string, email: string, pass: string) {
 };
 
 export function generateTimetable(data: string) {
-  return authApiClient.post('/generate-time-table', data);
+  const formData = new URLSearchParams();
+  formData.append("user_id", localStorage.getItem("token") as string);
+  formData.append("text", data);
+
+  return apiClient.post('/generate-time-table', formData);
 };
 
-export function fetchTimetable(id: string) {
-  return authApiClient.post('/fetch-time-table', {
-    "user_id": localStorage.getItem('token'),
-    id
-  });
+export function health() {
+  return apiClient.get('/health');
+}
+
+
+
+export function fetchTimetable(id: any) {
+  const formData = new URLSearchParams();
+  formData.append("text", id);
+  return apiClient.post('/fetch-time-table/', formData);
 };

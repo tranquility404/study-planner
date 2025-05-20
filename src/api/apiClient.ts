@@ -4,9 +4,9 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  // headers: {
+  //   "Content-Type": "application/json",
+  // },
 });
 
 const authApiClient = axios.create({
@@ -16,7 +16,7 @@ const authApiClient = axios.create({
   },
 });
 
-authApiClient.interceptors.request.use(
+// authApiClient.interceptors.request.use(
   // (config) => {
   //   const token = localStorage.getItem("token"); // Retrieve token
   //   if (token) {
@@ -24,24 +24,24 @@ authApiClient.interceptors.request.use(
   //   }
   //   return config;
   // },
-  (config) => {
-  if (config.method === "post" || config.method === "put") {
-    const originalData = config.data || {};
+  // (config) => {
+  // if (config.method === "post" || config.method === "put") {
+  //   const originalData = config.data || {};
     
-    config.data = {
-      ...originalData,
-      user_id: localStorage.getItem("token")
-    };
-  }
-  return config;
-}, (error) => Promise.reject(error)
-);
+    // config.data = {
+    //   ...originalData,
+    //   user_id: localStorage.getItem("token")
+    // };
+  // }
+//   return config;
+// }, (error) => Promise.reject(error)
+// );
 
 // Response interceptor for API calls
 authApiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.message || 'An error occurred';
+    // const message = error.response?.data?.message || 'An error occurred';
     // You can add global error handling here
     return Promise.reject(error);
   }

@@ -1,7 +1,7 @@
 
-import { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Plus, Trash2, Clock, Calendar, BookOpen, ChevronRight, ChevronLeft, Check } from 'lucide-react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
+import { BookOpen, Calendar, Check, ChevronDown, ChevronLeft, ChevronRight, ChevronUp, Clock, Plus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { generateTimetable } from '../api/apiRequests';
 
@@ -103,14 +103,14 @@ export default function CreateTimeTable() {
     };
 
     // Handle checkbox changes
-    const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, checked } = e.target;
+    // const handleToggleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     const { name, checked } = e.target;
 
-        setFormData({
-            ...formData,
-            [name]: checked
-        });
-    };
+    //     setFormData({
+    //         ...formData,
+    //         [name]: checked
+    //     });
+    // };
 
     // Add a new subject
     const addSubject = () => {
@@ -179,10 +179,10 @@ export default function CreateTimeTable() {
     };
 
     // Handle drag and drop
-    const handleDragEnd = (result, type) => {
+    const handleDragEnd = (result: any, type: any) => {
         if (!result.destination) return;
 
-        const items = Array.from(type === 'subjects' ? formData.subjects : formData.availableBlocks);
+        const items = Array.from(type === 'subjects' ? formData.subjects as any : formData.availableBlocks);
         const [reorderedItem] = items.splice(result.source.index, 1);
         items.splice(result.destination.index, 0, reorderedItem);
 
@@ -210,6 +210,7 @@ export default function CreateTimeTable() {
         const res = await generateTimetable(jsonString);
         console.log("Response from server:", res.data);
         navigate(`/timetable/${res.data["Mongodb_id"]}`);
+        // navigate('/timetable/682b8b61d9853c9e0cd71bef');
 
         // setSchedule(res.data);
 

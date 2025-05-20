@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { Calendar, Clock, BookOpen, Target, CheckSquare, List, Award, Coffee, AlertCircle, BarChart, TrendingDown } from "lucide-react";
-import { useLocation, useParams } from "react-router-dom";
-import { fetchTimetable, generateTimetable } from "../api/apiRequests";
+import { AlertCircle, BarChart, BookOpen, Calendar, CheckSquare, Clock, Coffee, Target, TrendingDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { fetchTimetable } from "../api/apiRequests";
 
 // Define TypeScript interfaces
 interface Subject {
@@ -58,19 +58,6 @@ interface DaySchedule {
   day: string;
   sessions: Session[];
 }
-
-// Utility function to convert time string to minutes
-const timeToMinutes = (time: string): number => {
-  const [hours, minutes] = time.split(":").map(Number);
-  return hours * 60 + minutes;
-};
-
-// Utility function to convert minutes to time string
-const minutesToTime = (minutes: number): string => {
-  const hours = Math.floor(minutes / 60);
-  const mins = minutes % 60;
-  return `${hours.toString().padStart(2, "0")}:${mins.toString().padStart(2, "0")}`;
-};
 
 const calculateDuration = (startTime: string, endTime: string): number => {
   const [startHour, startMin] = startTime.split(':').map(Number);
@@ -158,19 +145,140 @@ export default function Timetable() {
     ]
   });
 
-  const [schedule, setSchedule] = useState<DaySchedule[]>([]);
+  const [schedule, setSchedule] = useState<DaySchedule[]>([
+  {
+    "day": "Monday",
+    "sessions": [
+      {
+        "subject": "Maths",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "break": false
+      },
+      {
+        "break": true,
+        "startTime": "19:30",
+        "endTime": "19:45"
+      },
+      {
+        "subject": "English",
+        "startTime": "19:45",
+        "endTime": "21:15",
+        "break": false
+      }
+    ]
+  },
+  {
+    "day": "Tuesday",
+    "sessions": [
+      {
+        "subject": "Chemistry",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "break": false
+      },
+      {
+        "break": true,
+        "startTime": "19:30",
+        "endTime": "19:45"
+      },
+      {
+        "subject": "Physics",
+        "startTime": "19:45",
+        "endTime": "21:15",
+        "break": false
+      }
+    ]
+  },
+  {
+    "day": "Wednesday",
+    "sessions": [
+      {
+        "subject": "Biology",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "break": false
+      },
+      {
+        "break": true,
+        "startTime": "19:30",
+        "endTime": "19:45"
+      },
+      {
+        "subject": "Human Values",
+        "startTime": "19:45",
+        "endTime": "21:15",
+        "break": false
+      }
+    ]
+  },
+  {
+    "day": "Thursday",
+    "sessions": [
+      {
+        "subject": "Maths",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "break": false
+      },
+      {
+        "break": true,
+        "startTime": "19:30",
+        "endTime": "19:45"
+      },
+      {
+        "subject": "English",
+        "startTime": "19:45",
+        "endTime": "21:15",
+        "break": false
+      }
+    ]
+  },
+  {
+    "day": "Friday",
+    "sessions": [
+      {
+        "subject": "Chemistry",
+        "startTime": "18:00",
+        "endTime": "19:30",
+        "break": false
+      },
+      {
+        "break": true,
+        "startTime": "19:30",
+        "endTime": "19:45"
+      },
+      {
+        "subject": "Physics",
+        "startTime": "19:45",
+        "endTime": "21:15",
+        "break": false
+      }
+    ]
+  },
+  {
+    "day": "Saturday",
+    "sessions": []
+  },
+  {
+    "day": "Sunday",
+    "sessions": []
+  }
+]
+);
 
   useEffect(() => {
     const fetchData = async () => {
       if (id) {
         const res = await fetchTimetable(id);
-        console.log(res.data);
-        setSchedule(res.data["schedule"]);
+        console.log(res.data["data"]["schedule"]["time table"]);
+        setSchedule(res.data["data"]["schedule"]["time table"]);
       }
     };
    
     console.log("Data fetched successfully:", id);
     fetchData();
+
   }, [id]);
 
   const [currentDay, setCurrentDay] = useState(getCurrentDay());
@@ -314,7 +422,7 @@ export default function Timetable() {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {schedule
+                    {schedule && schedule
                       .find(day => day.day === currentDay)
                       ?.sessions.map((session, index) => (
                         <div

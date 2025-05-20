@@ -1,7 +1,7 @@
+import { ArrowLeft, ArrowRight, BookOpen, Lock, Mail, User } from 'lucide-react';
 import { useState } from 'react';
-import { BookOpen, Mail, Lock, User, ArrowRight, ArrowLeft } from 'lucide-react';
-import { login, signup } from '../api/apiRequests';
 import { useNavigate } from 'react-router-dom';
+import { login, signup } from '../api/apiRequests';
 
 // Main component for the authentication page
 export default function AuthPage() {
@@ -81,8 +81,12 @@ export default function AuthPage() {
     console.log('Form submitted:', formData);
     try {
         let res = isLogin? await login(formData.email, formData.password): await signup(formData.name, formData.email, formData.password);
-        localStorage.setItem('token', res.data["token"]);
-        navigate('/');
+        if (res.data.token) {
+            localStorage.setItem('token', res.data["token"]);
+            navigate('/');
+        } else {
+            alert("Something went wrong");
+        }
     } catch (error) {
         console.error('Error during form submission:', error);
         alert('An error occurred. Please try again.');
