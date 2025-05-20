@@ -15,16 +15,6 @@ class AzureOpenAIChatClient:
         self.api_key = api_key or os.getenv("AZURE_OPENAI_API_KEY", "Api-X-azurefoundry")
         self.api_version = api_version or "2025-01-01-preview"
 
-        # self.azure_endpoint_2 = azure_endpoint or os.getenv("ENDPOINT_URL", "https://ai-kashifalikhan0932471ai853575866361.openai.azure.com/")
-        # self.deployment_name_2 = deployment_name or os.getenv("DEPLOYMENT_NAME", "o1")
-        # self.api_key_2 = api_key or os.getenv("AZURE_OPENAI_API_KEY", "8Pf91HwvgBNLjJu1svN3sEGF2oVUMNEjvANWndkJPgr5eE1ETrNcJQQJ99BDACHYHv6XJ3w3AAAAACOGRqxd")
-        # self.api_version_2 = api_version or "2025-01-01-preview"
-
-        self.azure_endpoint_2 = azure_endpoint or os.getenv("ENDPOINT_URL", "https://Openai-sweden123.openai.azure.com/")
-        self.deployment_name_2 = deployment_name or os.getenv("DEPLOYMENT_NAME", "gpt-4o")
-        self.api_key_2 = api_key or os.getenv("AZURE_OPENAI_API_KEY", "baac5af7da4f4226b2ef9830f7381901")
-        self.api_version_2 = api_version or "2025-01-01-preview"
-
         # Initialize the Azure OpenAI client with key-based authentication
         self.client = AzureOpenAI(
             azure_endpoint=self.azure_endpoint,
