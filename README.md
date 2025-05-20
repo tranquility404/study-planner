@@ -35,7 +35,7 @@ We’re working on expanding the platform with:
 
 ---
 
-## 📋 Prerequisites (Short)
+## 📋 Prerequisites
 
 - Git  
 - Node.js (v18+) & npm  
@@ -102,10 +102,10 @@ student-study-planner/
 
 ---
 
-## 🌐 Deployment (Coming Soon)
+## 🌐 Deployment
 
 - Frontend: Vercel  
-- Backend: Railway
+- Backend: Virtual Machine
 
 We'll update this section once deployment is fully configured.
 
