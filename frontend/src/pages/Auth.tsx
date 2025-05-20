@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Lock, Mail, User } from 'lucide-react'
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { login, signup } from '../api/apiRequests';
+import { toast } from 'react-toastify';
 
 // Main component for the authentication page
 export default function AuthPage() {
@@ -85,11 +86,11 @@ export default function AuthPage() {
             localStorage.setItem('token', res.data["token"]);
             navigate('/');
         } else {
-            alert("Something went wrong");
+            // toast.error("Something went wrong");
         }
     } catch (error) {
         console.error('Error during form submission:', error);
-        alert('An error occurred. Please try again.');
+        // toast.error('An error occurred. Please try again.');
         return;
     }
   };
