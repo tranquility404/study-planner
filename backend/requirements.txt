@@ -1,0 +1,9 @@
+fastapi 
+uvicorn 
+python-multipart 
+PyMuPDF
+pymongo
+jwt
+guvicorn
+python-multipart
+openai
