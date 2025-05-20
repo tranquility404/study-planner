@@ -7,3 +7,4 @@ jwt
 guvicorn
 python-multipart
 openai
+bson
